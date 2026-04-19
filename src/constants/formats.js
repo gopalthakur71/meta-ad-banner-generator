@@ -1,0 +1,58 @@
+export const AD_FORMATS = [
+  {
+    id: 'feed-square',
+    label: 'Feed Square',
+    category: 'Meta Ads',
+    width: 1080,
+    height: 1080,
+    description: 'Facebook & Instagram Feed',
+    aspectRatio: '1:1',
+  },
+  {
+    id: 'feed-landscape',
+    label: 'Feed Landscape',
+    category: 'Meta Ads',
+    width: 1200,
+    height: 628,
+    description: 'Facebook Feed / Link Ads',
+    aspectRatio: '1.91:1',
+  },
+  {
+    id: 'stories',
+    label: 'Stories / Reels',
+    category: 'Meta Ads',
+    width: 1080,
+    height: 1920,
+    description: 'Instagram & Facebook Stories',
+    aspectRatio: '9:16',
+  },
+  {
+    id: 'carousel',
+    label: 'Carousel Card',
+    category: 'Meta Ads',
+    width: 1080,
+    height: 1080,
+    description: 'Carousel Ad Units',
+    aspectRatio: '1:1',
+  },
+  {
+    id: 'hero-desktop',
+    label: 'Hero — Desktop',
+    category: 'Website',
+    width: 1440,
+    height: 560,
+    description: 'Website Homepage Banner',
+    aspectRatio: '2.57:1',
+  },
+  {
+    id: 'hero-mobile',
+    label: 'Hero — Mobile',
+    category: 'Website',
+    width: 390,
+    height: 844,
+    description: 'Mobile Homepage Banner',
+    aspectRatio: '9:19.5',
+  },
+]
+
+export const FORMAT_CATEGORIES = ['Meta Ads', 'Website']
