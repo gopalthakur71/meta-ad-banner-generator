@@ -61,25 +61,24 @@ export function drawOfferBadge(ctx, text, x, y, accentColor, align = 'center') {
 
 export function drawLogo(ctx, logoImg, { W, H, logoOffset = {}, scale = 1, opacity = 1 }) {
   const baseH = Math.min(Math.max(H * 0.055, 48), 100)
-  const lh = baseH * scale
-  const lw = (logoImg.width / logoImg.height) * lh
+  const size = baseH * scale
   const pad = Math.round(H * 0.04)
-  const defaultX = W - lw - pad
+  const defaultX = W - size - pad
   const defaultY = pad
   const x = defaultX + (logoOffset.dx || 0)
   const y = defaultY + (logoOffset.dy || 0)
-  const r = Math.min(lw, lh) / 2
-  const cx = x + lw / 2
-  const cy = y + lh / 2
+  const r = size / 2
+  const cx = x + r
+  const cy = y + r
   ctx.save()
   ctx.globalAlpha = opacity
   ctx.beginPath()
   ctx.arc(cx, cy, r, 0, Math.PI * 2)
   ctx.closePath()
   ctx.clip()
-  ctx.drawImage(logoImg, x, y, lw, lh)
+  ctx.drawImage(logoImg, x, y, size, size)
   ctx.restore()
-  return { x, y, w: lw, h: lh }
+  return { x, y, w: size, h: size }
 }
 
 export function drawRoundedRect(ctx, x, y, w, h, r) {
