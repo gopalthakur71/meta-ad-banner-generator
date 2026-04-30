@@ -17,6 +17,7 @@ export default function BannerCanvas({ state }) {
     logoOffset, setLogoOffset,
     imageOffset, setImageOffset,
     setProductAsset,
+    headlineFontSize, subFontSize, ctaColor, badgeColor,
   } = state
 
   const hasContent = !!(copy?.headline || productImg)
@@ -43,12 +44,16 @@ export default function BannerCanvas({ state }) {
         textOffsets,
         logoOffset,
         imageOffset,
+        headlineFontSize,
+        subFontSize,
+        ctaColor,
+        badgeColor,
         onElementDrawn: (id, bbox) => {
           elementBboxesRef.current[id] = bbox
         },
       })
     })
-  }, [copy, selectedFormat, productImg, logoImg, activePalette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor, textOffsets, logoOffset, imageOffset])
+  }, [copy, selectedFormat, productImg, logoImg, activePalette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor, textOffsets, logoOffset, imageOffset, headlineFontSize, subFontSize, ctaColor, badgeColor])
 
   const maxDisplayW = 560
   const scale = Math.min(1, maxDisplayW / selectedFormat.width)

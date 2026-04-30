@@ -77,8 +77,34 @@ export default function App() {
           </div>
 
           <div className="bg-gray-900 rounded-2xl p-5 border border-gray-800">
-            <SectionTitle>Headline Font</SectionTitle>
+            <SectionTitle>Typography</SectionTitle>
             <FontPicker value={state.headlineFont} onChange={state.setHeadlineFont} />
+            <div className="mt-4 space-y-3">
+              <div>
+                <div className="flex justify-between mb-1">
+                  <p className="text-xs text-gray-500">Headline Size</p>
+                  <p className="text-xs text-gray-400">{Math.round(state.headlineFontSize * 100)}%</p>
+                </div>
+                <input
+                  type="range" min={0.6} max={1.8} step={0.05}
+                  value={state.headlineFontSize}
+                  onChange={e => state.setHeadlineFontSize(parseFloat(e.target.value))}
+                  className="w-full accent-amber-600"
+                />
+              </div>
+              <div>
+                <div className="flex justify-between mb-1">
+                  <p className="text-xs text-gray-500">Subheadline Size</p>
+                  <p className="text-xs text-gray-400">{Math.round(state.subFontSize * 100)}%</p>
+                </div>
+                <input
+                  type="range" min={0.6} max={1.8} step={0.05}
+                  value={state.subFontSize}
+                  onChange={e => state.setSubFontSize(parseFloat(e.target.value))}
+                  className="w-full accent-amber-600"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="bg-gray-900 rounded-2xl p-5 border border-gray-800">

@@ -31,6 +31,10 @@ export function useBannerState() {
   const [logoOffset, setLogoOffset] = useState({ dx: 0, dy: 0 })
   const [imageOffset, setImageOffset] = useState({ dx: 0, dy: 0 })
   const [textOffsets, setTextOffsets] = useState({})
+  const [headlineFontSize, setHeadlineFontSize] = useState(1)
+  const [subFontSize, setSubFontSize] = useState(1)
+  const [ctaColor, setCtaColor] = useState(ETHNIC_PALETTES[0].accent)
+  const [badgeColor, setBadgeColor] = useState(ETHNIC_PALETTES[0].accent)
 
   useEffect(() => {
     const src = localStorage.getItem('banner_productSrc')
@@ -113,6 +117,10 @@ export function useBannerState() {
     productImg, productSrc, setProductAsset, clearProductAsset,
     logoImg, logoSrc, setLogoAsset, clearLogoAsset,
     changePhoto, newProduct,
+    headlineFontSize, setHeadlineFontSize,
+    subFontSize, setSubFontSize,
+    ctaColor, setCtaColor,
+    badgeColor, setBadgeColor,
     logoVisible, setLogoVisible,
     logoOpacity, setLogoOpacity,
     logoScale, setLogoScale,

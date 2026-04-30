@@ -1,6 +1,6 @@
 import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {} }) {
+export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.primary
   ctx.fillRect(0, 0, W, H)
 
@@ -37,6 +37,8 @@ export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palett
   const maxW = W * 0.36
   const textColor = customTextColor
   const accentColor = palette.accent
+  const btnColor = ctaColor || accentColor
+  const bdgColor = badgeColor || accentColor
   let y = H * 0.26
 
   ctx.textAlign = 'left'
@@ -44,25 +46,25 @@ export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palett
   if (copy.offer_text) {
     const off = textOffsets.offer || { dx: 0, dy: 0 }
     onElement?.('offer', { x: px - 10, y: y - 30, w: 300, h: 56 })
-    drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, accentColor, 'left')
+    drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, bdgColor, 'left')
     y += 56
   }
 
-  ctx.font = `bold 88px "${headlineFont}"`
+  ctx.font = `bold ${Math.round(88 * headlineFontSize)}px "${headlineFont}"`
   ctx.fillStyle = textColor
   {
     const off = textOffsets.headline || { dx: 0, dy: 0 }
     onElement?.('headline', { x: px - 10, y: y - 88, w: maxW + 10, h: 120 })
-    const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, maxW, 96)
+    const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, maxW, Math.round(96 * headlineFontSize))
     y = ny - off.dy
   }
 
-  ctx.font = '400 32px Lato'
+  ctx.font = `400 ${Math.round(32 * subFontSize)}px Lato`
   ctx.fillStyle = hexToRgba(textColor, 0.82)
   {
     const off = textOffsets.sub || { dx: 0, dy: 0 }
     onElement?.('sub', { x: px - 10, y: y + 14 - 32, w: maxW + 10, h: 70 })
-    const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 14 + off.dy, maxW, 42)
+    const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 14 + off.dy, maxW, Math.round(42 * subFontSize))
     y = ny - off.dy
   }
 
@@ -79,7 +81,7 @@ export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palett
   {
     const off = textOffsets.cta || { dx: 0, dy: 0 }
     onElement?.('cta', { x: px, y: y, w: 240, h: 64 })
-    ctx.fillStyle = accentColor
+    ctx.fillStyle = btnColor
     drawRoundedRect(ctx, px + off.dx, y + off.dy, 240, 64, 32)
     ctx.fill()
     ctx.font = 'bold 26px Lato'

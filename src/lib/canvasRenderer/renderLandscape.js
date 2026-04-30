@@ -1,6 +1,6 @@
 import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {} }) {
+export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
@@ -33,6 +33,8 @@ export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette,
 
   const textColor = customTextColor
   const accentColor = palette.accent
+  const btnColor = ctaColor || accentColor
+  const bdgColor = badgeColor || accentColor
   const isRight = layout === 'right-aligned'
   const px = isRight ? Math.round(W * 0.54) : 72
   const maxW = W * 0.42
@@ -43,25 +45,25 @@ export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette,
   if (copy.offer_text) {
     const off = textOffsets.offer || { dx: 0, dy: 0 }
     onElement?.('offer', { x: px - 10, y: y - 30, w: 280, h: 50 })
-    drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, accentColor, 'left')
+    drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, bdgColor, 'left')
     y += 52
   }
 
-  ctx.font = `bold 58px "${headlineFont}"`
+  ctx.font = `bold ${Math.round(58 * headlineFontSize)}px "${headlineFont}"`
   ctx.fillStyle = textColor
   {
     const off = textOffsets.headline || { dx: 0, dy: 0 }
     onElement?.('headline', { x: px - 10, y: y - 58, w: maxW + 10, h: 90 })
-    const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, maxW, 66)
+    const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, maxW, Math.round(66 * headlineFontSize))
     y = ny - off.dy
   }
 
-  ctx.font = '400 26px Lato'
+  ctx.font = `400 ${Math.round(26 * subFontSize)}px Lato`
   ctx.fillStyle = hexToRgba(textColor, 0.82)
   {
     const off = textOffsets.sub || { dx: 0, dy: 0 }
     onElement?.('sub', { x: px - 10, y: y + 10 - 26, w: maxW + 10, h: 60 })
-    const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 10 + off.dy, maxW, 34)
+    const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 10 + off.dy, maxW, Math.round(34 * subFontSize))
     y = ny - off.dy
   }
 
@@ -69,7 +71,7 @@ export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette,
   {
     const off = textOffsets.cta || { dx: 0, dy: 0 }
     onElement?.('cta', { x: px, y: y, w: 210, h: 56 })
-    ctx.fillStyle = accentColor
+    ctx.fillStyle = btnColor
     drawRoundedRect(ctx, px + off.dx, y + off.dy, 210, 56, 28)
     ctx.fill()
     ctx.font = 'bold 22px Lato'

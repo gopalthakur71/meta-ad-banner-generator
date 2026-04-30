@@ -1,6 +1,6 @@
 import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {} }) {
+export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
@@ -20,25 +20,25 @@ export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, 
   if (copy.offer_text) {
     const off = textOffsets.offer || { dx: 0, dy: 0 }
     onElement?.('offer', { x: px - 10, y: y - 30, w: 280, h: 50 })
-    drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, palette.accent, 'left')
+    drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, badgeColor || palette.accent, 'left')
     y += 52
   }
 
-  ctx.font = `bold 56px "${headlineFont}"`
+  ctx.font = `bold ${Math.round(56 * headlineFontSize)}px "${headlineFont}"`
   ctx.fillStyle = customTextColor
   {
     const off = textOffsets.headline || { dx: 0, dy: 0 }
     onElement?.('headline', { x: px - 10, y: y - 56, w: W - px * 2, h: 90 })
-    const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, W - px * 2, 64)
+    const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, W - px * 2, Math.round(64 * headlineFontSize))
     y = ny - off.dy
   }
 
-  ctx.font = '400 28px Lato'
+  ctx.font = `400 ${Math.round(28 * subFontSize)}px Lato`
   ctx.fillStyle = hexToRgba(customTextColor, 0.78)
   {
     const off = textOffsets.sub || { dx: 0, dy: 0 }
     onElement?.('sub', { x: px - 10, y: y + 8 - 28, w: W - px * 2, h: 60 })
-    const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 8 + off.dy, W - px * 2, 36)
+    const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 8 + off.dy, W - px * 2, Math.round(36 * subFontSize))
     y = ny - off.dy
   }
 
@@ -46,7 +46,7 @@ export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, 
   {
     const off = textOffsets.cta || { dx: 0, dy: 0 }
     onElement?.('cta', { x: px, y: y, w: 220, h: 60 })
-    ctx.fillStyle = palette.accent
+    ctx.fillStyle = ctaColor || palette.accent
     drawRoundedRect(ctx, px + off.dx, y + off.dy, 220, 60, 30)
     ctx.fill()
     ctx.font = 'bold 24px Lato'

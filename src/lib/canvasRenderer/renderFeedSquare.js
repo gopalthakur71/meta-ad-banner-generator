@@ -1,6 +1,6 @@
 import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {} }) {
+export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
@@ -39,6 +39,8 @@ export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette
   const isLeft = layout === 'left-aligned' || isRight
   const textColor = customTextColor
   const accentColor = palette.accent
+  const btnColor = ctaColor || accentColor
+  const bdgColor = badgeColor || accentColor
 
   if (isLeft) {
     const px = isRight ? Math.round(W * 0.54) : 60
@@ -48,26 +50,26 @@ export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette
     if (copy.offer_text) {
       const off = textOffsets.offer || { dx: 0, dy: 0 }
       onElement?.('offer', { x: px - 10, y: y - 30, w: 280, h: 50 })
-      drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, accentColor, 'left')
+      drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, bdgColor, 'left')
       y += 52
     }
 
     ctx.textAlign = 'left'
-    ctx.font = `bold 68px "${headlineFont}"`
+    ctx.font = `bold ${Math.round(68 * headlineFontSize)}px "${headlineFont}"`
     ctx.fillStyle = textColor
     {
       const off = textOffsets.headline || { dx: 0, dy: 0 }
       onElement?.('headline', { x: px - 10, y: y - 68, w: maxW + 10, h: 100 })
-      const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, maxW, 76)
+      const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, maxW, Math.round(76 * headlineFontSize))
       y = ny - off.dy
     }
 
-    ctx.font = '400 32px Lato'
+    ctx.font = `400 ${Math.round(32 * subFontSize)}px Lato`
     ctx.fillStyle = hexToRgba(textColor, 0.82)
     {
       const off = textOffsets.sub || { dx: 0, dy: 0 }
       onElement?.('sub', { x: px - 10, y: y + 12 - 32, w: maxW + 10, h: 70 })
-      const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 12 + off.dy, maxW, 42)
+      const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 12 + off.dy, maxW, Math.round(42 * subFontSize))
       y = ny - off.dy
     }
 
@@ -75,7 +77,7 @@ export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette
     {
       const off = textOffsets.cta || { dx: 0, dy: 0 }
       onElement?.('cta', { x: px, y: y, w: 240, h: 64 })
-      ctx.fillStyle = accentColor
+      ctx.fillStyle = btnColor
       drawRoundedRect(ctx, px + off.dx, y + off.dy, 240, 64, 32)
       ctx.fill()
       ctx.font = 'bold 26px Lato'
@@ -92,26 +94,26 @@ export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette
     if (copy.offer_text) {
       const off = textOffsets.offer || { dx: 0, dy: 0 }
       onElement?.('offer', { x: centerX - 150, y: y - 30, w: 300, h: 50 })
-      drawOfferBadge(ctx, copy.offer_text, centerX + off.dx, y + off.dy, accentColor, 'center')
+      drawOfferBadge(ctx, copy.offer_text, centerX + off.dx, y + off.dy, bdgColor, 'center')
       y += 52
       ctx.textAlign = 'center'
     }
 
-    ctx.font = `bold 72px "${headlineFont}"`
+    ctx.font = `bold ${Math.round(72 * headlineFontSize)}px "${headlineFont}"`
     ctx.fillStyle = textColor
     {
       const off = textOffsets.headline || { dx: 0, dy: 0 }
       onElement?.('headline', { x: 0, y: y - 72, w: W, h: 100 })
-      const ny = drawWrappedText(ctx, copy.headline, centerX + off.dx, y + off.dy, W * 0.82, 80)
+      const ny = drawWrappedText(ctx, copy.headline, centerX + off.dx, y + off.dy, W * 0.82, Math.round(80 * headlineFontSize))
       y = ny - off.dy
     }
 
-    ctx.font = '400 34px Lato'
+    ctx.font = `400 ${Math.round(34 * subFontSize)}px Lato`
     ctx.fillStyle = hexToRgba(textColor, 0.82)
     {
       const off = textOffsets.sub || { dx: 0, dy: 0 }
       onElement?.('sub', { x: 0, y: y + 10 - 34, w: W, h: 70 })
-      const ny = drawWrappedText(ctx, copy.sub_headline, centerX + off.dx, y + 10 + off.dy, W * 0.78, 44)
+      const ny = drawWrappedText(ctx, copy.sub_headline, centerX + off.dx, y + 10 + off.dy, W * 0.78, Math.round(44 * subFontSize))
       y = ny - off.dy
     }
 
@@ -119,7 +121,7 @@ export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette
     {
       const off = textOffsets.cta || { dx: 0, dy: 0 }
       onElement?.('cta', { x: centerX - 130, y: y, w: 260, h: 68 })
-      ctx.fillStyle = accentColor
+      ctx.fillStyle = btnColor
       drawRoundedRect(ctx, centerX - 130 + off.dx, y + off.dy, 260, 68, 34)
       ctx.fill()
       ctx.font = 'bold 28px Lato'

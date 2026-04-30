@@ -1,7 +1,7 @@
 import EthnicPalette from './EthnicPalette'
 
 export default function ColorPicker({ state }) {
-  const { palette, setPalette, customPrimary, setCustomPrimary, customAccent, setCustomAccent, customTextColor, setCustomTextColor } = state
+  const { palette, setPalette, customPrimary, setCustomPrimary, customAccent, setCustomAccent, customTextColor, setCustomTextColor, ctaColor, setCtaColor, badgeColor, setBadgeColor } = state
 
   return (
     <div className="space-y-4">
@@ -48,6 +48,32 @@ export default function ColorPicker({ state }) {
             className="w-10 h-10 rounded-lg cursor-pointer border border-gray-700 bg-gray-800"
           />
           <span className="text-xs text-gray-400 font-mono">{customTextColor}</span>
+        </div>
+      </div>
+      <div className="flex gap-4">
+        <div className="flex-1">
+          <p className="text-xs text-gray-500 mb-1.5">CTA Button</p>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={ctaColor}
+              onChange={e => setCtaColor(e.target.value)}
+              className="w-10 h-10 rounded-lg cursor-pointer border border-gray-700 bg-gray-800"
+            />
+            <span className="text-xs text-gray-400 font-mono">{ctaColor}</span>
+          </div>
+        </div>
+        <div className="flex-1">
+          <p className="text-xs text-gray-500 mb-1.5">Offer Badge</p>
+          <div className="flex items-center gap-2">
+            <input
+              type="color"
+              value={badgeColor}
+              onChange={e => setBadgeColor(e.target.value)}
+              className="w-10 h-10 rounded-lg cursor-pointer border border-gray-700 bg-gray-800"
+            />
+            <span className="text-xs text-gray-400 font-mono">{badgeColor}</span>
+          </div>
         </div>
       </div>
     </div>
