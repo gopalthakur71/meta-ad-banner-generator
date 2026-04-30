@@ -44,9 +44,23 @@ export default function App() {
             </h1>
             <p className="text-xs text-gray-500">AI-Powered · Ethnic & Saree Brands</p>
           </div>
-          <span className="text-xs px-3 py-1 rounded-full bg-rose-900/40 border border-rose-800 text-rose-400">
-            Powered by Claude
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={state.changePhoto}
+              className="text-xs px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+            >
+              Change Photo
+            </button>
+            <button
+              onClick={state.newProduct}
+              className="text-xs px-3 py-1.5 rounded-lg bg-rose-900/50 border border-rose-800 text-rose-300 hover:bg-rose-800 hover:text-white transition-colors"
+            >
+              New Product
+            </button>
+            <span className="text-xs px-3 py-1 rounded-full bg-rose-900/40 border border-rose-800 text-rose-400">
+              Powered by Claude
+            </span>
+          </div>
         </div>
       </header>
 

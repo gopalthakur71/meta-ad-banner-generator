@@ -68,8 +68,15 @@ export function drawLogo(ctx, logoImg, { W, H, logoOffset = {}, scale = 1, opaci
   const defaultY = pad
   const x = defaultX + (logoOffset.dx || 0)
   const y = defaultY + (logoOffset.dy || 0)
+  const r = Math.min(lw, lh) / 2
+  const cx = x + lw / 2
+  const cy = y + lh / 2
   ctx.save()
   ctx.globalAlpha = opacity
+  ctx.beginPath()
+  ctx.arc(cx, cy, r, 0, Math.PI * 2)
+  ctx.closePath()
+  ctx.clip()
   ctx.drawImage(logoImg, x, y, lw, lh)
   ctx.restore()
   return { x, y, w: lw, h: lh }

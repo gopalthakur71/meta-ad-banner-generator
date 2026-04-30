@@ -78,6 +78,19 @@ export function useBannerState() {
     setTextOffsets({})
   }
 
+  function changePhoto() {
+    clearProductAsset()
+  }
+
+  function newProduct() {
+    clearProductAsset()
+    setCopy(null)
+    setProductName('')
+    setProductDescription('')
+    setTextOffsets({})
+    setLogoOffset({ dx: 0, dy: 0 })
+  }
+
   const activePalette = {
     ...palette,
     primary: customPrimary,
@@ -99,6 +112,7 @@ export function useBannerState() {
     customTextColor, setCustomTextColor,
     productImg, productSrc, setProductAsset, clearProductAsset,
     logoImg, logoSrc, setLogoAsset, clearLogoAsset,
+    changePhoto, newProduct,
     logoVisible, setLogoVisible,
     logoOpacity, setLogoOpacity,
     logoScale, setLogoScale,
