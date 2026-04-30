@@ -1,16 +1,68 @@
-# React + Vite
+# Meta Ad Banner Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An AI-powered banner generator for ethnic and saree brands, built with React and Claude AI. Design professional Meta ad creatives and website hero banners directly in the browser — no design tool required.
 
-Currently, two official plugins are available:
+## What it does
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Enter brand details (name, product description, target audience, tone, CTA)
+- Upload a product/model photo
+- Pick a color palette (curated ethnic palettes included)
+- Choose an ad format
+- Claude generates headline, subtext, and CTA copy
+- A live canvas renders the final banner
 
-## React Compiler
+## Ad Formats
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+| Format | Size | Use |
+|---|---|---|
+| Feed Square | 1080×1080 | Facebook & Instagram Feed |
+| Feed Landscape | 1200×628 | Facebook Feed / Link Ads |
+| Stories / Reels | 1080×1920 | Instagram & Facebook Stories |
+| Carousel Card | 1080×1080 | Carousel Ad Units |
+| Hero — Desktop | 1440×560 | Website Homepage Banner |
+| Hero — Mobile | 390×844 | Mobile Homepage Banner |
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- **React 19** + **Vite**
+- **Tailwind CSS v4**
+- **Anthropic Claude API** (`@anthropic-ai/sdk`) for copy generation
+- HTML5 Canvas for banner rendering
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── AssetUploader/     # Photo upload + drop zone
+│   ├── BannerCanvas/      # Canvas preview + format switcher
+│   ├── BrandForm/         # Brand inputs, format selector, tone picker
+│   ├── ColorPicker/       # Color input + ethnic palette presets
+│   └── Toolbar/           # Generate / regenerate controls
+├── constants/
+│   ├── formats.js         # All ad format definitions
+│   └── palettes.js        # Ethnic color palettes
+├── hooks/
+│   ├── useBannerState.js  # Central state for all banner inputs
+│   └── useClaudeGenerate.js # Claude API call + loading/error state
+├── lib/
+│   ├── claudeApi.js       # generateBannerCopy() function
+│   └── canvasRenderer/    # Per-format canvas rendering logic
+└── App.jsx                # Root layout
+```
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+Set your Anthropic API key in the app's API key field before generating.
+
+## Iteration Log
+
+| Version | Date | Summary |
+|---|---|---|
+| v1.0 | 2026-04-19 | Initial build — all core features |
+| — | 2026-04-30 | Reset to v1.0 to restart iteration cleanly |

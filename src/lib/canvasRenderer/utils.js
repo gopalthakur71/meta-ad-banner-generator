@@ -16,21 +16,23 @@ export function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
   return currentY + lineHeight
 }
 
-export function drawImageCover(ctx, img, x, y, w, h) {
+export function drawImageCover(ctx, img, x, y, w, h, offsetX = 0, offsetY = 0) {
   const imgAspect = img.width / img.height
   const boxAspect = w / h
   let sx, sy, sw, sh
   if (imgAspect > boxAspect) {
     sh = img.height
     sw = sh * boxAspect
-    sx = (img.width - sw) / 2
-    sy = 0
+    sx = (img.width - sw) / 2 - offsetX * (sw / w)
+    sy = -(offsetY * (sh / h))
   } else {
     sw = img.width
     sh = sw / boxAspect
-    sx = 0
-    sy = (img.height - sh) / 2
+    sx = -(offsetX * (sw / w))
+    sy = (img.height - sh) / 2 - offsetY * (sh / h)
   }
+  sx = Math.max(0, Math.min(img.width - sw, sx))
+  sy = Math.max(0, Math.min(img.height - sh, sy))
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h)
 }
 
@@ -39,6 +41,38 @@ export function hexToRgba(hex, alpha = 1) {
   const g = parseInt(hex.slice(3, 5), 16)
   const b = parseInt(hex.slice(5, 7), 16)
   return `rgba(${r},${g},${b},${alpha})`
+}
+
+export function drawOfferBadge(ctx, text, x, y, accentColor, align = 'center') {
+  const upper = text.toUpperCase()
+  ctx.save()
+  ctx.font = '600 24px Lato'
+  ctx.textAlign = align
+  const tw = ctx.measureText(upper).width
+  const pw = tw + 36, ph = 36, pr = 18
+  const bx = align === 'center' ? x - pw / 2 : x
+  ctx.fillStyle = accentColor
+  drawRoundedRect(ctx, bx, y - 26, pw, ph, pr)
+  ctx.fill()
+  ctx.fillStyle = '#FFFFFF'
+  ctx.fillText(upper, x, y)
+  ctx.restore()
+}
+
+export function drawLogo(ctx, logoImg, { W, H, logoOffset = {}, scale = 1, opacity = 1 }) {
+  const baseH = Math.min(Math.max(H * 0.055, 48), 100)
+  const lh = baseH * scale
+  const lw = (logoImg.width / logoImg.height) * lh
+  const pad = Math.round(H * 0.04)
+  const defaultX = W - lw - pad
+  const defaultY = pad
+  const x = defaultX + (logoOffset.dx || 0)
+  const y = defaultY + (logoOffset.dy || 0)
+  ctx.save()
+  ctx.globalAlpha = opacity
+  ctx.drawImage(logoImg, x, y, lw, lh)
+  ctx.restore()
+  return { x, y, w: lw, h: lh }
 }
 
 export function drawRoundedRect(ctx, x, y, w, h, r) {

@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 
-export default function DropZone({ label, preview, onFile, accept = 'image/*' }) {
+export default function DropZone({ label, preview, onFile, onClear, accept = 'image/*' }) {
   const inputRef = useRef()
 
   function handleDrop(e) {
@@ -34,7 +34,20 @@ export default function DropZone({ label, preview, onFile, accept = 'image/*' })
     >
       <input ref={inputRef} type="file" accept={accept} className="hidden" onChange={handleChange} />
       {preview ? (
-        <img src={preview} alt={label} className="w-full h-full object-cover" />
+        <>
+          <img src={preview} alt={label} className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+          <span className="absolute bottom-2 left-0 right-0 text-center text-xs text-white/70 opacity-0 group-hover:opacity-100 transition-opacity">
+            Click to replace
+          </span>
+          <button
+            onClick={e => { e.stopPropagation(); onClear() }}
+            className="absolute top-2 right-2 bg-gray-900/80 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold transition-colors z-10"
+            title="Remove"
+          >
+            ×
+          </button>
+        </>
       ) : (
         <div className="flex flex-col items-center justify-center h-full gap-1 text-gray-600 group-hover:text-gray-400 transition-colors">
           <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">

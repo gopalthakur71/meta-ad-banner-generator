@@ -1,91 +1,136 @@
-import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect } from './utils'
+import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette, layout, brandName }) {
-  // Background
+export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {} }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
   if (productImg) {
     if (layout === 'overlay' || layout === 'centered') {
-      drawImageCover(ctx, productImg, 0, 0, W, H)
+      drawImageCover(ctx, productImg, 0, 0, W, H, imageOffset.dx || 0, imageOffset.dy || 0)
       const grad = ctx.createLinearGradient(0, H * 0.45, 0, H)
       grad.addColorStop(0, 'rgba(0,0,0,0)')
       grad.addColorStop(1, hexToRgba(palette.primary, 0.88))
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, W, H)
     } else if (layout === 'left-aligned') {
-      drawImageCover(ctx, productImg, W * 0.45, 0, W * 0.55, H)
-      ctx.fillStyle = palette.primary
-      ctx.fillRect(0, 0, W * 0.48, H)
+      drawImageCover(ctx, productImg, W * 0.45, 0, W * 0.55, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      const grad = ctx.createLinearGradient(0, 0, W * 0.72, 0)
+      grad.addColorStop(0, hexToRgba(palette.primary, 1))
+      grad.addColorStop(0.6, hexToRgba(palette.primary, 0.9))
+      grad.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = grad
+      ctx.fillRect(0, 0, W, H)
+    } else if (layout === 'right-aligned') {
+      drawImageCover(ctx, productImg, 0, 0, W * 0.55, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      const grad = ctx.createLinearGradient(W, 0, W * 0.28, 0)
+      grad.addColorStop(0, hexToRgba(palette.primary, 1))
+      grad.addColorStop(0.6, hexToRgba(palette.primary, 0.9))
+      grad.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = grad
+      ctx.fillRect(0, 0, W, H)
     } else {
-      drawImageCover(ctx, productImg, 0, H * 0.38, W, H * 0.62)
+      drawImageCover(ctx, productImg, 0, H * 0.38, W, H * 0.62, imageOffset.dx || 0, imageOffset.dy || 0)
       ctx.fillStyle = palette.primary
       ctx.fillRect(0, 0, W, H * 0.4)
     }
   }
 
-  const textColor = (layout === 'overlay' || layout === 'centered') ? '#FFFFFF' : palette.background
+  const isRight = layout === 'right-aligned'
+  const isLeft = layout === 'left-aligned' || isRight
+  const textColor = customTextColor
   const accentColor = palette.accent
 
-  if (layout === 'left-aligned') {
-    const px = 60
+  if (isLeft) {
+    const px = isRight ? Math.round(W * 0.54) : 60
+    const maxW = W * 0.42
     let y = H * 0.22
+
     if (copy.offer_text) {
-      ctx.font = '500 28px Lato'
-      ctx.fillStyle = accentColor
-      ctx.fillText(copy.offer_text.toUpperCase(), px, y)
-      y += 48
+      const off = textOffsets.offer || { dx: 0, dy: 0 }
+      onElement?.('offer', { x: px - 10, y: y - 30, w: 280, h: 50 })
+      drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, accentColor, 'left')
+      y += 52
     }
-    ctx.font = 'bold 68px "Playfair Display"'
-    ctx.fillStyle = textColor
-    y = drawWrappedText(ctx, copy.headline, px, y, W * 0.42, 76)
-    ctx.font = '300 32px Lato'
-    ctx.fillStyle = hexToRgba(textColor === '#FFFFFF' ? '#FFFFFF' : palette.text, 0.85)
-    y = drawWrappedText(ctx, copy.sub_headline, px, y + 12, W * 0.42, 42)
-    y += 28
-    ctx.fillStyle = accentColor
-    drawRoundedRect(ctx, px, y, 240, 64, 32)
-    ctx.fill()
-    ctx.font = 'bold 26px Lato'
-    ctx.fillStyle = '#FFFFFF'
-    ctx.textAlign = 'center'
-    ctx.fillText(copy.cta_text, px + 120, y + 40)
+
     ctx.textAlign = 'left'
+    ctx.font = `bold 68px "${headlineFont}"`
+    ctx.fillStyle = textColor
+    {
+      const off = textOffsets.headline || { dx: 0, dy: 0 }
+      onElement?.('headline', { x: px - 10, y: y - 68, w: maxW + 10, h: 100 })
+      const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, maxW, 76)
+      y = ny - off.dy
+    }
+
+    ctx.font = '400 32px Lato'
+    ctx.fillStyle = hexToRgba(textColor, 0.82)
+    {
+      const off = textOffsets.sub || { dx: 0, dy: 0 }
+      onElement?.('sub', { x: px - 10, y: y + 12 - 32, w: maxW + 10, h: 70 })
+      const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 12 + off.dy, maxW, 42)
+      y = ny - off.dy
+    }
+
+    y += 28
+    {
+      const off = textOffsets.cta || { dx: 0, dy: 0 }
+      onElement?.('cta', { x: px, y: y, w: 240, h: 64 })
+      ctx.fillStyle = accentColor
+      drawRoundedRect(ctx, px + off.dx, y + off.dy, 240, 64, 32)
+      ctx.fill()
+      ctx.font = 'bold 26px Lato'
+      ctx.fillStyle = '#FFFFFF'
+      ctx.textAlign = 'center'
+      ctx.fillText(copy.cta_text, px + 120 + off.dx, y + 40 + off.dy)
+      ctx.textAlign = 'left'
+    }
   } else {
     const centerX = W / 2
     let y = layout === 'minimal' ? H * 0.12 : H * 0.58
     ctx.textAlign = 'center'
+
     if (copy.offer_text) {
-      ctx.font = '500 26px Lato'
-      ctx.fillStyle = accentColor
-      ctx.fillText(copy.offer_text.toUpperCase(), centerX, y)
-      y += 44
+      const off = textOffsets.offer || { dx: 0, dy: 0 }
+      onElement?.('offer', { x: centerX - 150, y: y - 30, w: 300, h: 50 })
+      drawOfferBadge(ctx, copy.offer_text, centerX + off.dx, y + off.dy, accentColor, 'center')
+      y += 52
+      ctx.textAlign = 'center'
     }
-    ctx.font = 'bold 72px "Playfair Display"'
+
+    ctx.font = `bold 72px "${headlineFont}"`
     ctx.fillStyle = textColor
-    y = drawWrappedText(ctx, copy.headline, centerX, y, W * 0.82, 80)
-    ctx.font = '300 34px Lato'
-    ctx.fillStyle = hexToRgba(textColor === '#FFFFFF' ? '#FFFFFF' : palette.text, 0.85)
-    y = drawWrappedText(ctx, copy.sub_headline, centerX, y + 10, W * 0.78, 44)
+    {
+      const off = textOffsets.headline || { dx: 0, dy: 0 }
+      onElement?.('headline', { x: 0, y: y - 72, w: W, h: 100 })
+      const ny = drawWrappedText(ctx, copy.headline, centerX + off.dx, y + off.dy, W * 0.82, 80)
+      y = ny - off.dy
+    }
+
+    ctx.font = '400 34px Lato'
+    ctx.fillStyle = hexToRgba(textColor, 0.82)
+    {
+      const off = textOffsets.sub || { dx: 0, dy: 0 }
+      onElement?.('sub', { x: 0, y: y + 10 - 34, w: W, h: 70 })
+      const ny = drawWrappedText(ctx, copy.sub_headline, centerX + off.dx, y + 10 + off.dy, W * 0.78, 44)
+      y = ny - off.dy
+    }
+
     y += 32
-    ctx.fillStyle = accentColor
-    drawRoundedRect(ctx, centerX - 130, y, 260, 68, 34)
-    ctx.fill()
-    ctx.font = 'bold 28px Lato'
-    ctx.fillStyle = '#FFFFFF'
-    ctx.fillText(copy.cta_text, centerX, y + 42)
-    ctx.textAlign = 'left'
+    {
+      const off = textOffsets.cta || { dx: 0, dy: 0 }
+      onElement?.('cta', { x: centerX - 130, y: y, w: 260, h: 68 })
+      ctx.fillStyle = accentColor
+      drawRoundedRect(ctx, centerX - 130 + off.dx, y + off.dy, 260, 68, 34)
+      ctx.fill()
+      ctx.font = 'bold 28px Lato'
+      ctx.fillStyle = '#FFFFFF'
+      ctx.fillText(copy.cta_text, centerX + off.dx, y + off.dy + 42)
+      ctx.textAlign = 'left'
+    }
   }
 
-  // Logo
-  if (logoImg) {
-    const lh = 64, lw = (logoImg.width / logoImg.height) * lh
-    ctx.drawImage(logoImg, W - lw - 40, 36, lw, lh)
-  } else {
-    ctx.font = 'bold 28px "Playfair Display"'
-    ctx.fillStyle = palette.accent
-    ctx.textAlign = 'right'
-    ctx.fillText(brandName, W - 40, 72)
-    ctx.textAlign = 'left'
+  if (logoImg && logoVisible) {
+    const logoBbox = drawLogo(ctx, logoImg, { W, H, logoOffset, scale: logoScale, opacity: logoOpacity })
+    onElement?.('logo', logoBbox)
   }
 }

@@ -24,33 +24,53 @@ function Textarea({ ...props }) {
   )
 }
 
-export default function BrandForm({ state }) {
+export default function BrandForm({ state, onGenerate, loading, canGenerate }) {
   const {
-    brandName, setBrandName,
+    productName, setProductName,
     productDescription, setProductDescription,
-    targetAudience, setTargetAudience,
     tone, setTone,
-    ctaText, setCtaText,
     selectedFormat, setSelectedFormat,
   } = state
 
   return (
     <div className="space-y-5">
       <div>
-        <Label>Brand Name</Label>
-        <Input value={brandName} onChange={e => setBrandName(e.target.value)} placeholder="e.g. Ijor Sarees" />
+        <Label>Product Name</Label>
+        <Input
+          value={productName}
+          onChange={e => setProductName(e.target.value)}
+          placeholder="e.g. Ijor Banarasi Silk Sarees"
+        />
       </div>
       <div>
         <Label>Product Description</Label>
-        <Textarea value={productDescription} onChange={e => setProductDescription(e.target.value)} placeholder="e.g. Handwoven Banarasi Silk Saree — Bridal Collection" />
-      </div>
-      <div>
-        <Label>Target Audience</Label>
-        <Input value={targetAudience} onChange={e => setTargetAudience(e.target.value)} placeholder="e.g. Women aged 25–45, interested in ethnic fashion" />
-      </div>
-      <div>
-        <Label>CTA Text</Label>
-        <Input value={ctaText} onChange={e => setCtaText(e.target.value)} placeholder="e.g. Shop Now" />
+        <Textarea
+          value={productDescription}
+          onChange={e => setProductDescription(e.target.value)}
+          placeholder="e.g. Handwoven Banarasi Silk Saree — Bridal Collection"
+        />
+        <button
+          onClick={onGenerate}
+          disabled={!canGenerate || loading}
+          className="mt-2 w-full flex items-center justify-center gap-2 bg-rose-700 hover:bg-rose-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold px-4 py-2.5 rounded-lg transition-colors text-sm"
+        >
+          {loading ? (
+            <>
+              <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+              Generating...
+            </>
+          ) : (
+            <>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+              Generate Caption
+            </>
+          )}
+        </button>
       </div>
       <div>
         <Label>Tone / Mood</Label>

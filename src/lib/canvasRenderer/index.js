@@ -14,23 +14,37 @@ const renderers = {
   'hero-mobile': renderHeroMobile,
 }
 
-export function renderBanner(canvas, { format, productImg, logoImg, copy, palette, layout, brandName }) {
+export function renderBanner(canvas, { format, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor, textOffsets, onElementDrawn, logoOffset, imageOffset }) {
   const ctx = canvas.getContext('2d')
   canvas.width = format.width
   canvas.height = format.height
-  ctx.clearRect(0, 0, format.width, format.height)
+  const W = format.width
+  const H = format.height
+
+  ctx.globalAlpha = 1
+  ctx.globalCompositeOperation = 'source-over'
+  ctx.textAlign = 'left'
+  ctx.clearRect(0, 0, W, H)
 
   const renderer = renderers[format.id]
   if (!renderer) return
 
   renderer(ctx, {
-    W: format.width,
-    H: format.height,
+    W,
+    H,
     productImg,
     logoImg,
     copy,
     palette,
     layout,
-    brandName,
+    logoVisible,
+    logoOpacity,
+    logoScale,
+    headlineFont: headlineFont || 'Playfair Display',
+    customTextColor: customTextColor || '#FFFFFF',
+    textOffsets: textOffsets || {},
+    onElement: onElementDrawn,
+    logoOffset: logoOffset || {},
+    imageOffset: imageOffset || {},
   })
 }

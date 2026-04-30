@@ -5,33 +5,39 @@ const client = new Anthropic({
   dangerouslyAllowBrowser: true,
 })
 
-export async function generateBannerCopy({ brandName, productDescription, targetAudience, tone, ctaText, formatId }) {
+export async function generateBannerCopy({ productName, productDescription, tone, formatId }) {
   const isWebsiteHero = formatId?.startsWith('hero')
   const context = isWebsiteHero
     ? 'a website homepage hero banner'
     : 'a Meta social media ad banner'
 
-  const prompt = `You are an expert copywriter for premium Indian ethnic wear and saree brands.
-Generate compelling ad copy for ${context}.
+  const prompt = `You are a master copywriter for premium Indian ethnic wear and saree brands — think Sabyasachi, Raw Mango, and Ekaya Banaras. Your writing is poetic, evocative, and luxurious.
 
-Brand: ${brandName}
-Product: ${productDescription}
-Target Audience: ${targetAudience}
-Tone/Mood: ${tone}
-CTA: ${ctaText}
+Create captivating ad copy for ${context}.
+
+Product: ${productName}
+Description: ${productDescription}
+Tone: ${tone}
 Format: ${formatId}
 
 ${isWebsiteHero
-  ? 'This is a website hero banner — copy can be slightly longer and more brand-storytelling focused.'
-  : "Follow Meta's best practices: keep text minimal (under 20% of image area), punchy headline, clear CTA."}
+  ? 'This is a website hero — write brand-storytelling copy that draws the viewer in.'
+  : 'This is a social media ad — keep it punchy and emotionally resonant. Every word must earn its place.'}
+
+Guidelines:
+- Headline: Short, poetic, and memorable. Use metaphor or sensory language. Max 7 words.
+- Sub-headline: Reinforces the headline with a specific benefit or mood. Max 14 words.
+- CTA: Action-oriented and inviting (2–4 words).
+- Offer badge: A short label like "New Arrival", "Limited Edition", "Festive Edit", or leave empty.
+- Avoid clichés like "Timeless elegance" or "Crafted with love" — be specific and fresh.
 
 Return ONLY valid JSON in this exact shape:
 {
-  "headline": "Short punchy headline (max 8 words)",
-  "sub_headline": "Supporting line that reinforces the value proposition (max 15 words)",
-  "body_copy": "Brief body text if needed (max 20 words, or empty string for minimal layouts)",
-  "cta_text": "Action-oriented CTA (2-4 words)",
-  "offer_text": "Optional offer badge text like 'New Arrival' or 'Free Shipping' (or empty string)",
+  "headline": "Short poetic headline",
+  "sub_headline": "Supporting line with specific appeal",
+  "body_copy": "Brief body text if needed (max 20 words, or empty string)",
+  "cta_text": "Shop Now",
+  "offer_text": "New Arrival",
   "layout_suggestion": "one of: centered | left-aligned | overlay | minimal"
 }`
 

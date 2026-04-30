@@ -2,6 +2,7 @@ const LAYOUTS = [
   { id: 'overlay', label: 'Overlay' },
   { id: 'centered', label: 'Centered' },
   { id: 'left-aligned', label: 'Left Align' },
+  { id: 'right-aligned', label: 'Right Align' },
   { id: 'minimal', label: 'Minimal' },
 ]
 

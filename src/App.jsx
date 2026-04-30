@@ -5,6 +5,8 @@ import AssetUploader from './components/AssetUploader/AssetUploader'
 import ColorPicker from './components/ColorPicker/ColorPicker'
 import BannerCanvas from './components/BannerCanvas/BannerCanvas'
 import Toolbar from './components/Toolbar/Toolbar'
+import CopyEditor from './components/CopyEditor/CopyEditor'
+import FontPicker from './components/FontPicker/FontPicker'
 
 function SectionTitle({ children }) {
   return (
@@ -20,15 +22,13 @@ export default function App() {
   const state = useBannerState()
   const { generate, loading, error } = useClaudeGenerate()
 
-  const canGenerate = !!(state.brandName && state.productDescription && state.targetAudience)
+  const canGenerate = !!(state.productName && state.productDescription)
 
   function handleGenerate() {
     generate({
-      brandName: state.brandName,
+      productName: state.productName,
       productDescription: state.productDescription,
-      targetAudience: state.targetAudience,
       tone: state.tone,
-      ctaText: state.ctaText,
       formatId: state.selectedFormat.id,
       setCopy: state.setCopy,
     })
@@ -36,7 +36,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
-      {/* Header */}
       <header className="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-10">
         <div className="max-w-screen-xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
@@ -51,13 +50,11 @@ export default function App() {
         </div>
       </header>
 
-      {/* Main */}
       <div className="max-w-screen-xl mx-auto px-6 py-8 flex gap-8">
-        {/* Left panel */}
         <aside className="w-80 flex-shrink-0 space-y-6 overflow-y-auto" style={{ maxHeight: 'calc(100vh - 80px)', position: 'sticky', top: 72 }}>
           <div className="bg-gray-900 rounded-2xl p-5 border border-gray-800">
-            <SectionTitle>Brand Details</SectionTitle>
-            <BrandForm state={state} />
+            <SectionTitle>Product Details</SectionTitle>
+            <BrandForm state={state} onGenerate={handleGenerate} loading={loading} canGenerate={canGenerate} />
           </div>
 
           <div className="bg-gray-900 rounded-2xl p-5 border border-gray-800">
@@ -66,8 +63,18 @@ export default function App() {
           </div>
 
           <div className="bg-gray-900 rounded-2xl p-5 border border-gray-800">
+            <SectionTitle>Headline Font</SectionTitle>
+            <FontPicker value={state.headlineFont} onChange={state.setHeadlineFont} />
+          </div>
+
+          <div className="bg-gray-900 rounded-2xl p-5 border border-gray-800">
             <SectionTitle>Colors</SectionTitle>
             <ColorPicker state={state} />
+          </div>
+
+          <div className="bg-gray-900 rounded-2xl p-5 border border-gray-800">
+            <SectionTitle>Ad Copy</SectionTitle>
+            <CopyEditor copy={state.copy} setCopy={state.setCopy} />
           </div>
 
           <div className="bg-gray-900 rounded-2xl p-5 border border-gray-800">
@@ -79,13 +86,9 @@ export default function App() {
               canGenerate={canGenerate}
             />
             {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
-            {!canGenerate && (
-              <p className="text-xs text-gray-600 mt-2 text-center">Fill in Brand Name, Product, and Audience to generate</p>
-            )}
           </div>
         </aside>
 
-        {/* Right panel — canvas */}
         <main className="flex-1 bg-gray-900 rounded-2xl p-8 border border-gray-800 flex items-start justify-center min-h-96">
           <BannerCanvas state={state} />
         </main>

@@ -1,20 +1,28 @@
-import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect } from './utils'
+import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palette, layout, brandName }) {
+export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {} }) {
   ctx.fillStyle = palette.primary
   ctx.fillRect(0, 0, W, H)
 
   if (productImg) {
     if (layout === 'left-aligned' || layout === 'minimal') {
-      // Image on right half
-      drawImageCover(ctx, productImg, W * 0.48, 0, W * 0.52, H)
+      drawImageCover(ctx, productImg, W * 0.48, 0, W * 0.52, H, imageOffset.dx || 0, imageOffset.dy || 0)
       const grad = ctx.createLinearGradient(W * 0.42, 0, W * 0.68, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 1))
       grad.addColorStop(1, 'rgba(0,0,0,0)')
       ctx.fillStyle = grad
       ctx.fillRect(W * 0.42, 0, W * 0.26, H)
+    } else if (layout === 'right-aligned') {
+      drawImageCover(ctx, productImg, 0, 0, W * 0.52, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      const grad = ctx.createLinearGradient(W * 0.58, 0, W * 0.32, 0)
+      grad.addColorStop(0, hexToRgba(palette.primary, 1))
+      grad.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = grad
+      ctx.fillRect(W * 0.32, 0, W * 0.26, H)
+      ctx.fillStyle = hexToRgba(palette.primary, 1)
+      ctx.fillRect(W * 0.58, 0, W * 0.42, H)
     } else {
-      drawImageCover(ctx, productImg, 0, 0, W, H)
+      drawImageCover(ctx, productImg, 0, 0, W, H, imageOffset.dx || 0, imageOffset.dy || 0)
       const grad = ctx.createLinearGradient(0, 0, W * 0.6, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 0.95))
       grad.addColorStop(0.55, hexToRgba(palette.primary, 0.5))
@@ -24,47 +32,65 @@ export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palett
     }
   }
 
-  const px = 96
-  const textColor = palette.background
+  const isRight = layout === 'right-aligned'
+  const px = isRight ? Math.round(W * 0.6) : 96
+  const maxW = W * 0.36
+  const textColor = customTextColor
   const accentColor = palette.accent
   let y = H * 0.26
 
+  ctx.textAlign = 'left'
+
   if (copy.offer_text) {
-    ctx.font = '500 24px Lato'
-    ctx.fillStyle = accentColor
-    ctx.letterSpacing = '3px'
-    ctx.fillText(copy.offer_text.toUpperCase(), px, y)
-    ctx.letterSpacing = '0px'
-    y += 42
+    const off = textOffsets.offer || { dx: 0, dy: 0 }
+    onElement?.('offer', { x: px - 10, y: y - 30, w: 300, h: 56 })
+    drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, accentColor, 'left')
+    y += 56
   }
-  ctx.font = 'bold 88px "Playfair Display"'
+
+  ctx.font = `bold 88px "${headlineFont}"`
   ctx.fillStyle = textColor
-  y = drawWrappedText(ctx, copy.headline, px, y, W * 0.48, 96)
-  ctx.font = '300 32px Lato'
-  ctx.fillStyle = hexToRgba('#FFFFFF', 0.84)
-  y = drawWrappedText(ctx, copy.sub_headline, px, y + 14, W * 0.44, 42)
+  {
+    const off = textOffsets.headline || { dx: 0, dy: 0 }
+    onElement?.('headline', { x: px - 10, y: y - 88, w: maxW + 10, h: 120 })
+    const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, maxW, 96)
+    y = ny - off.dy
+  }
+
+  ctx.font = '400 32px Lato'
+  ctx.fillStyle = hexToRgba(textColor, 0.82)
+  {
+    const off = textOffsets.sub || { dx: 0, dy: 0 }
+    onElement?.('sub', { x: px - 10, y: y + 14 - 32, w: maxW + 10, h: 70 })
+    const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 14 + off.dy, maxW, 42)
+    y = ny - off.dy
+  }
 
   if (copy.body_copy) {
     ctx.font = '400 24px Lato'
-    ctx.fillStyle = hexToRgba('#FFFFFF', 0.68)
-    y = drawWrappedText(ctx, copy.body_copy, px, y + 10, W * 0.42, 34)
+    ctx.fillStyle = hexToRgba(textColor, 0.65)
+    const off = textOffsets.body || { dx: 0, dy: 0 }
+    onElement?.('body', { x: px - 10, y: y + 10 - 24, w: maxW + 10, h: 60 })
+    const ny = drawWrappedText(ctx, copy.body_copy, px + off.dx, y + 10 + off.dy, maxW, 34)
+    y = ny - off.dy
   }
-  y += 36
-  ctx.fillStyle = accentColor
-  drawRoundedRect(ctx, px, y, 240, 64, 32)
-  ctx.fill()
-  ctx.font = 'bold 26px Lato'
-  ctx.fillStyle = '#FFFFFF'
-  ctx.textAlign = 'center'
-  ctx.fillText(copy.cta_text, px + 120, y + 41)
-  ctx.textAlign = 'left'
 
-  if (logoImg) {
-    const lh = 56, lw = (logoImg.width / logoImg.height) * lh
-    ctx.drawImage(logoImg, px, 36, lw, lh)
-  } else {
-    ctx.font = 'bold 30px "Playfair Display"'
+  y += 36
+  {
+    const off = textOffsets.cta || { dx: 0, dy: 0 }
+    onElement?.('cta', { x: px, y: y, w: 240, h: 64 })
     ctx.fillStyle = accentColor
-    ctx.fillText(brandName, px, 74)
+    drawRoundedRect(ctx, px + off.dx, y + off.dy, 240, 64, 32)
+    ctx.fill()
+    ctx.font = 'bold 26px Lato'
+    ctx.fillStyle = '#FFFFFF'
+    ctx.textAlign = 'center'
+    ctx.fillText(copy.cta_text, px + 120 + off.dx, y + 41 + off.dy)
+    ctx.textAlign = 'left'
+  }
+
+  if (logoImg && logoVisible) {
+    const logoBbox = drawLogo(ctx, logoImg, { W, H, logoOffset, scale: logoScale, opacity: logoOpacity })
+    onElement?.('logo', logoBbox)
   }
 }

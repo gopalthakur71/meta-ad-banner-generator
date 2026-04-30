@@ -5,11 +5,11 @@ export function useClaudeGenerate() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
-  async function generate({ brandName, productDescription, targetAudience, tone, ctaText, formatId, setCopy }) {
+  async function generate({ productName, productDescription, tone, formatId, setCopy }) {
     setLoading(true)
     setError(null)
     try {
-      const result = await generateBannerCopy({ brandName, productDescription, targetAudience, tone, ctaText, formatId })
+      const result = await generateBannerCopy({ productName, productDescription, tone, formatId })
       setCopy(result)
     } catch (e) {
       setError(e.message || 'Generation failed')

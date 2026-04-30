@@ -1,18 +1,15 @@
-import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect } from './utils'
+import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-// Carousel uses same canvas dimensions as feed square but with a distinct split-card aesthetic
-export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, layout, brandName }) {
+export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {} }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
   const imgH = Math.floor(H * 0.62)
-  if (productImg) drawImageCover(ctx, productImg, 0, 0, W, imgH)
+  if (productImg) drawImageCover(ctx, productImg, 0, 0, W, imgH, imageOffset.dx || 0, imageOffset.dy || 0)
 
-  // Bottom content card
   ctx.fillStyle = palette.primary
   ctx.fillRect(0, imgH - 4, W, H - imgH + 4)
 
-  // Accent top border line
   ctx.fillStyle = palette.accent
   ctx.fillRect(0, imgH - 4, W, 6)
 
@@ -21,36 +18,46 @@ export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, 
   ctx.textAlign = 'left'
 
   if (copy.offer_text) {
-    ctx.font = '500 24px Lato'
-    ctx.fillStyle = palette.accent
-    ctx.fillText(copy.offer_text.toUpperCase(), px, y)
-    y += 40
+    const off = textOffsets.offer || { dx: 0, dy: 0 }
+    onElement?.('offer', { x: px - 10, y: y - 30, w: 280, h: 50 })
+    drawOfferBadge(ctx, copy.offer_text, px + off.dx, y + off.dy, palette.accent, 'left')
+    y += 52
   }
-  ctx.font = 'bold 56px "Playfair Display"'
-  ctx.fillStyle = palette.background
-  y = drawWrappedText(ctx, copy.headline, px, y, W - px * 2, 64)
-  ctx.font = '300 28px Lato'
-  ctx.fillStyle = hexToRgba(palette.background, 0.78)
-  y = drawWrappedText(ctx, copy.sub_headline, px, y + 8, W - px * 2, 36)
+
+  ctx.font = `bold 56px "${headlineFont}"`
+  ctx.fillStyle = customTextColor
+  {
+    const off = textOffsets.headline || { dx: 0, dy: 0 }
+    onElement?.('headline', { x: px - 10, y: y - 56, w: W - px * 2, h: 90 })
+    const ny = drawWrappedText(ctx, copy.headline, px + off.dx, y + off.dy, W - px * 2, 64)
+    y = ny - off.dy
+  }
+
+  ctx.font = '400 28px Lato'
+  ctx.fillStyle = hexToRgba(customTextColor, 0.78)
+  {
+    const off = textOffsets.sub || { dx: 0, dy: 0 }
+    onElement?.('sub', { x: px - 10, y: y + 8 - 28, w: W - px * 2, h: 60 })
+    const ny = drawWrappedText(ctx, copy.sub_headline, px + off.dx, y + 8 + off.dy, W - px * 2, 36)
+    y = ny - off.dy
+  }
+
   y += 28
-
-  ctx.fillStyle = palette.accent
-  drawRoundedRect(ctx, px, y, 220, 60, 30)
-  ctx.fill()
-  ctx.font = 'bold 24px Lato'
-  ctx.fillStyle = '#FFFFFF'
-  ctx.textAlign = 'center'
-  ctx.fillText(copy.cta_text, px + 110, y + 38)
-  ctx.textAlign = 'left'
-
-  if (logoImg) {
-    const lh = 52, lw = (logoImg.width / logoImg.height) * lh
-    ctx.drawImage(logoImg, W - lw - 40, 28, lw, lh)
-  } else {
-    ctx.font = 'bold 24px "Playfair Display"'
+  {
+    const off = textOffsets.cta || { dx: 0, dy: 0 }
+    onElement?.('cta', { x: px, y: y, w: 220, h: 60 })
     ctx.fillStyle = palette.accent
-    ctx.textAlign = 'right'
-    ctx.fillText(brandName, W - 40, 64)
+    drawRoundedRect(ctx, px + off.dx, y + off.dy, 220, 60, 30)
+    ctx.fill()
+    ctx.font = 'bold 24px Lato'
+    ctx.fillStyle = '#FFFFFF'
+    ctx.textAlign = 'center'
+    ctx.fillText(copy.cta_text, px + 110 + off.dx, y + 38 + off.dy)
     ctx.textAlign = 'left'
+  }
+
+  if (logoImg && logoVisible) {
+    const logoBbox = drawLogo(ctx, logoImg, { W, H, logoOffset, scale: logoScale, opacity: logoOpacity })
+    onElement?.('logo', logoBbox)
   }
 }
