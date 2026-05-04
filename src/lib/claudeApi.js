@@ -41,8 +41,9 @@ Return ONLY valid JSON in this exact shape:
   "layout_suggestion": "one of: centered | left-aligned | overlay | minimal"
 }`
 
+  const model = 'claude-sonnet-4-6'
   const message = await client.messages.create({
-    model: 'claude-sonnet-4-6',
+    model,
     max_tokens: 512,
     messages: [{ role: 'user', content: prompt }],
   })
@@ -50,5 +51,14 @@ Return ONLY valid JSON in this exact shape:
   const raw = message.content[0].text.trim()
   const jsonMatch = raw.match(/\{[\s\S]*\}/)
   if (!jsonMatch) throw new Error('Invalid JSON response from Claude')
-  return JSON.parse(jsonMatch[0])
+  const copy = JSON.parse(jsonMatch[0])
+
+  // Surface usage so the caller can record per-call cost.
+  // message.usage is provided by the Anthropic SDK on every successful response.
+  const usage = {
+    model: message.model || model,
+    inputTokens: message.usage?.input_tokens ?? 0,
+    outputTokens: message.usage?.output_tokens ?? 0,
+  }
+  return { copy, usage }
 }

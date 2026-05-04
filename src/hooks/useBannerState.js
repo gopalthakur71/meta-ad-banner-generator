@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { AD_FORMATS } from '../constants/formats'
 import { ETHNIC_PALETTES } from '../constants/palettes'
+import { makeBannerId } from '../lib/costTracking'
 
 function srcToImg(src, callback) {
   const img = new Image()
@@ -32,6 +33,10 @@ export function useBannerState() {
   const [imageOffset, setImageOffset] = useState({ dx: 0, dy: 0 })
   const [imageScale, setImageScale] = useState(1)
   const [textOffsets, setTextOffsets] = useState({})
+  // bannerId scopes API cost tracking. It regenerates on "New Product"
+  // (a fresh banner session). "Change Photo" keeps the same id since the
+  // copy generated for this product is still relevant.
+  const [bannerId, setBannerId] = useState(() => makeBannerId())
   const [headlineFontSize, setHeadlineFontSize] = useState(1)
   const [subFontSize, setSubFontSize] = useState(1)
   const [ctaColor, setCtaColor] = useState(ETHNIC_PALETTES[0].accent)
@@ -97,6 +102,7 @@ export function useBannerState() {
     setTextOffsets({})
     setLogoOffset({ dx: 0, dy: 0 })
     setImageScale(1)
+    setBannerId(makeBannerId())
   }
 
   const activePalette = {
@@ -132,5 +138,6 @@ export function useBannerState() {
     layout, setLayout,
     copy, setCopy,
     activePalette,
+    bannerId,
   }
 }

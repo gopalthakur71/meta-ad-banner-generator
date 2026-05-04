@@ -7,6 +7,7 @@ import BannerCanvas from './components/BannerCanvas/BannerCanvas'
 import Toolbar from './components/Toolbar/Toolbar'
 import CopyEditor from './components/CopyEditor/CopyEditor'
 import FontPicker from './components/FontPicker/FontPicker'
+import CostChip from './components/CostTracker/CostChip'
 
 function SectionTitle({ children }) {
   return (
@@ -20,7 +21,7 @@ function SectionTitle({ children }) {
 
 export default function App() {
   const state = useBannerState()
-  const { generate, loading, error } = useClaudeGenerate()
+  const { generate, loading, error, recordVersion } = useClaudeGenerate()
 
   const canGenerate = !!(state.productName && state.productDescription)
 
@@ -31,6 +32,7 @@ export default function App() {
       tone: state.tone,
       formatId: state.selectedFormat.id,
       setCopy: state.setCopy,
+      bannerId: state.bannerId,
     })
   }
 
@@ -45,6 +47,7 @@ export default function App() {
             <p className="text-xs text-gray-500">AI-Powered · Ethnic & Saree Brands</p>
           </div>
           <div className="flex items-center gap-3">
+            <CostChip bannerId={state.bannerId} recordVersion={recordVersion} />
             <button
               onClick={state.changePhoto}
               className="text-xs px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
