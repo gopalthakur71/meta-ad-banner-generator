@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
 import { renderBanner } from '../../lib/canvasRenderer'
+import { recordDownload } from '../../lib/costTracking'
 import LayoutSwitcher from './LayoutSwitcher'
 
 export default function BannerCanvas({ state }) {
@@ -19,6 +20,7 @@ export default function BannerCanvas({ state }) {
     imageScale, setImageScale,
     setProductAsset,
     headlineFontSize, subFontSize, ctaColor, badgeColor,
+    bannerId,
   } = state
 
   const MIN_ZOOM = 0.5
@@ -200,10 +202,21 @@ export default function BannerCanvas({ state }) {
   function handleDownload() {
     const canvas = canvasRef.current
     if (!canvas) return
+    const filename = `${productName || 'banner'}-${selectedFormat.id}.png`
     const link = document.createElement('a')
-    link.download = `${productName || 'banner'}-${selectedFormat.id}.png`
+    link.download = filename
     link.href = canvas.toDataURL('image/png')
     link.click()
+    // Record the download against the current banner so the history page
+    // can show "this banner produced these PNG files".
+    if (bannerId) {
+      recordDownload({
+        bannerId,
+        filename,
+        formatId: selectedFormat.id,
+        productName,
+      })
+    }
   }
 
   const hasDragged = Object.keys(textOffsets || {}).length > 0 ||

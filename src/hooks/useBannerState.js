@@ -42,6 +42,10 @@ export function useBannerState() {
   const [ctaColor, setCtaColor] = useState(ETHNIC_PALETTES[0].accent)
   const [badgeColor, setBadgeColor] = useState(ETHNIC_PALETTES[0].accent)
 
+  // Top-level view: 'editor' shows the banner builder, 'history' shows the
+  // cost tracking page. Defaults to editor on every fresh load.
+  const [view, setView] = useState('editor')
+
   useEffect(() => {
     const src = localStorage.getItem('banner_productSrc')
     if (src) srcToImg(src, setProductImg)
@@ -139,5 +143,6 @@ export function useBannerState() {
     copy, setCopy,
     activePalette,
     bannerId,
+    view, setView,
   }
 }

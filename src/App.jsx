@@ -8,6 +8,7 @@ import Toolbar from './components/Toolbar/Toolbar'
 import CopyEditor from './components/CopyEditor/CopyEditor'
 import FontPicker from './components/FontPicker/FontPicker'
 import CostChip from './components/CostTracker/CostChip'
+import CostHistoryPage from './components/CostTracker/CostHistoryPage'
 
 function SectionTitle({ children }) {
   return (
@@ -36,6 +37,18 @@ export default function App() {
     })
   }
 
+  // Render the cost history as a separate "page" instead of an overlay.
+  // This sidesteps the stacking-context bug we hit with backdrop-blur on
+  // the sticky header (which broke position:fixed for child modals).
+  if (state.view === 'history') {
+    return (
+      <CostHistoryPage
+        currentBannerId={state.bannerId}
+        onBack={() => state.setView('editor')}
+      />
+    )
+  }
+
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
       <header className="border-b border-gray-800 bg-gray-950/80 backdrop-blur sticky top-0 z-10">
@@ -47,7 +60,11 @@ export default function App() {
             <p className="text-xs text-gray-500">AI-Powered · Ethnic & Saree Brands</p>
           </div>
           <div className="flex items-center gap-3">
-            <CostChip bannerId={state.bannerId} recordVersion={recordVersion} />
+            <CostChip
+              bannerId={state.bannerId}
+              recordVersion={recordVersion}
+              onOpenHistory={() => state.setView('history')}
+            />
             <button
               onClick={state.changePhoto}
               className="text-xs px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
