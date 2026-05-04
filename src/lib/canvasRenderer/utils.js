@@ -16,21 +16,45 @@ export function drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
   return currentY + lineHeight
 }
 
-export function drawImageCover(ctx, img, x, y, w, h, offsetX = 0, offsetY = 0) {
+export function drawImageCover(ctx, img, x, y, w, h, offsetX = 0, offsetY = 0, scale = 1) {
+  scale = Math.max(0.2, scale || 1)
   const imgAspect = img.width / img.height
   const boxAspect = w / h
+
+  if (scale < 1) {
+    // Zoom out: shrink the destination rect, center it in the original box,
+    // and fill it cover-style. Drag offsets translate the shrunk image.
+    const dw = w * scale
+    const dh = h * scale
+    const dx = x + (w - dw) / 2 + offsetX
+    const dy = y + (h - dh) / 2 + offsetY
+    let sx, sy, sw, sh
+    if (imgAspect > boxAspect) {
+      sh = img.height
+      sw = sh * boxAspect
+      sx = (img.width - sw) / 2
+      sy = 0
+    } else {
+      sw = img.width
+      sh = sw / boxAspect
+      sx = 0
+      sy = (img.height - sh) / 2
+    }
+    ctx.drawImage(img, sx, sy, sw, sh, dx, dy, dw, dh)
+    return
+  }
+
+  // scale >= 1: shrink the source crop to zoom in. Destination stays at (x, y, w, h).
   let sx, sy, sw, sh
   if (imgAspect > boxAspect) {
-    sh = img.height
+    sh = img.height / scale
     sw = sh * boxAspect
-    sx = (img.width - sw) / 2 - offsetX * (sw / w)
-    sy = -(offsetY * (sh / h))
   } else {
-    sw = img.width
+    sw = img.width / scale
     sh = sw / boxAspect
-    sx = -(offsetX * (sw / w))
-    sy = (img.height - sh) / 2 - offsetY * (sh / h)
   }
+  sx = (img.width - sw) / 2 - offsetX * (sw / w)
+  sy = (img.height - sh) / 2 - offsetY * (sh / h)
   sx = Math.max(0, Math.min(img.width - sw, sx))
   sy = Math.max(0, Math.min(img.height - sh, sy))
   ctx.drawImage(img, sx, sy, sw, sh, x, y, w, h)

@@ -1,19 +1,19 @@
 import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
+export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, imageScale = 1, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.primary
   ctx.fillRect(0, 0, W, H)
 
   if (productImg) {
     if (layout === 'left-aligned' || layout === 'minimal') {
-      drawImageCover(ctx, productImg, W * 0.48, 0, W * 0.52, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      drawImageCover(ctx, productImg, W * 0.48, 0, W * 0.52, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       const grad = ctx.createLinearGradient(W * 0.42, 0, W * 0.68, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 1))
       grad.addColorStop(1, 'rgba(0,0,0,0)')
       ctx.fillStyle = grad
       ctx.fillRect(W * 0.42, 0, W * 0.26, H)
     } else if (layout === 'right-aligned') {
-      drawImageCover(ctx, productImg, 0, 0, W * 0.52, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      drawImageCover(ctx, productImg, 0, 0, W * 0.52, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       const grad = ctx.createLinearGradient(W * 0.58, 0, W * 0.32, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 1))
       grad.addColorStop(1, 'rgba(0,0,0,0)')
@@ -22,7 +22,7 @@ export function renderHeroDesktop(ctx, { W, H, productImg, logoImg, copy, palett
       ctx.fillStyle = hexToRgba(palette.primary, 1)
       ctx.fillRect(W * 0.58, 0, W * 0.42, H)
     } else {
-      drawImageCover(ctx, productImg, 0, 0, W, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      drawImageCover(ctx, productImg, 0, 0, W, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       const grad = ctx.createLinearGradient(0, 0, W * 0.6, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 0.95))
       grad.addColorStop(0.55, hexToRgba(palette.primary, 0.5))

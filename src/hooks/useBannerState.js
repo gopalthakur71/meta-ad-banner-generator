@@ -30,6 +30,7 @@ export function useBannerState() {
   const [logoScale, setLogoScale] = useState(1)
   const [logoOffset, setLogoOffset] = useState({ dx: 0, dy: 0 })
   const [imageOffset, setImageOffset] = useState({ dx: 0, dy: 0 })
+  const [imageScale, setImageScale] = useState(1)
   const [textOffsets, setTextOffsets] = useState({})
   const [headlineFontSize, setHeadlineFontSize] = useState(1)
   const [subFontSize, setSubFontSize] = useState(1)
@@ -50,6 +51,7 @@ export function useBannerState() {
     setProductImg(img)
     setProductSrc(src)
     setImageOffset({ dx: 0, dy: 0 })
+    setImageScale(1)
     localStorage.setItem('banner_productSrc', src)
   }
 
@@ -57,6 +59,7 @@ export function useBannerState() {
     setProductImg(null)
     setProductSrc(null)
     setImageOffset({ dx: 0, dy: 0 })
+    setImageScale(1)
     localStorage.removeItem('banner_productSrc')
   }
 
@@ -93,6 +96,7 @@ export function useBannerState() {
     setProductDescription('')
     setTextOffsets({})
     setLogoOffset({ dx: 0, dy: 0 })
+    setImageScale(1)
   }
 
   const activePalette = {
@@ -108,6 +112,7 @@ export function useBannerState() {
     headlineFont, setHeadlineFont,
     textOffsets, updateTextOffset, resetTextOffsets,
     imageOffset, setImageOffset,
+    imageScale, setImageScale,
     logoOffset, setLogoOffset,
     selectedFormat, setSelectedFormat,
     palette, setPalette,

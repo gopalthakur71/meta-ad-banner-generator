@@ -16,9 +16,14 @@ export default function BannerCanvas({ state }) {
     textOffsets, updateTextOffset, resetTextOffsets,
     logoOffset, setLogoOffset,
     imageOffset, setImageOffset,
+    imageScale, setImageScale,
     setProductAsset,
     headlineFontSize, subFontSize, ctaColor, badgeColor,
   } = state
+
+  const MIN_ZOOM = 0.5
+  const MAX_ZOOM = 3
+  const clampZoom = v => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, v))
 
   const hasContent = !!(copy?.headline || productImg)
 
@@ -44,6 +49,7 @@ export default function BannerCanvas({ state }) {
         textOffsets,
         logoOffset,
         imageOffset,
+        imageScale,
         headlineFontSize,
         subFontSize,
         ctaColor,
@@ -53,7 +59,7 @@ export default function BannerCanvas({ state }) {
         },
       })
     })
-  }, [copy, selectedFormat, productImg, logoImg, activePalette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor, textOffsets, logoOffset, imageOffset, headlineFontSize, subFontSize, ctaColor, badgeColor])
+  }, [copy, selectedFormat, productImg, logoImg, activePalette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor, textOffsets, logoOffset, imageOffset, imageScale, headlineFontSize, subFontSize, ctaColor, badgeColor])
 
   const maxDisplayW = 560
   const scale = Math.min(1, maxDisplayW / selectedFormat.width)
@@ -134,6 +140,25 @@ export default function BannerCanvas({ state }) {
     setCursor('default')
   }
 
+  // Ctrl/Cmd + wheel over the image zooms; trackpad pinch arrives as ctrlKey wheel too.
+  useEffect(() => {
+    const el = wrapperRef.current
+    if (!el) return
+    function onWheel(e) {
+      if (!productImg) return
+      if (!(e.ctrlKey || e.metaKey)) return
+      const { x, y } = getCanvasCoords(e)
+      const hit = getHitTarget(x, y)
+      if (!hit || hit.type !== 'image') return
+      e.preventDefault()
+      const delta = -e.deltaY
+      const factor = Math.exp(delta * 0.0015)
+      setImageScale(prev => clampZoom((prev || 1) * factor))
+    }
+    el.addEventListener('wheel', onWheel, { passive: false })
+    return () => el.removeEventListener('wheel', onWheel)
+  }, [productImg, imageScale, logoOffset, imageOffset, textOffsets, logoVisible, logoImg])
+
   function handleFileDrop(file) {
     if (!file.type.startsWith('image/')) return
     const reader = new FileReader()
@@ -183,13 +208,19 @@ export default function BannerCanvas({ state }) {
 
   const hasDragged = Object.keys(textOffsets || {}).length > 0 ||
     (logoOffset.dx !== 0 || logoOffset.dy !== 0) ||
-    (imageOffset.dx !== 0 || imageOffset.dy !== 0)
+    (imageOffset.dx !== 0 || imageOffset.dy !== 0) ||
+    (imageScale && imageScale !== 1)
 
   function resetAll() {
     resetTextOffsets()
     setLogoOffset({ dx: 0, dy: 0 })
     setImageOffset({ dx: 0, dy: 0 })
+    setImageScale(1)
   }
+
+  function zoomIn() { setImageScale(prev => clampZoom((prev || 1) + 0.1)) }
+  function zoomOut() { setImageScale(prev => clampZoom((prev || 1) - 0.1)) }
+  function zoomReset() { setImageScale(1) }
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -203,6 +234,56 @@ export default function BannerCanvas({ state }) {
         <p className="text-xs text-gray-600 mb-2 uppercase tracking-wider font-semibold">Layout</p>
         <LayoutSwitcher layout={layout} onChange={setLayout} />
       </div>
+
+      {productImg && (
+        <div className="self-start w-full">
+          <p className="text-xs text-gray-600 mb-2 uppercase tracking-wider font-semibold">Image Zoom</p>
+          <div className="flex items-center gap-3 bg-gray-900 border border-gray-800 rounded-xl px-3 py-2">
+            <button
+              type="button"
+              onClick={zoomOut}
+              disabled={(imageScale || 1) <= MIN_ZOOM + 0.001}
+              className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed text-gray-200 flex items-center justify-center transition-colors"
+              title="Zoom out"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+              </svg>
+            </button>
+            <input
+              type="range"
+              min={MIN_ZOOM}
+              max={MAX_ZOOM}
+              step={0.01}
+              value={imageScale || 1}
+              onChange={e => setImageScale(clampZoom(parseFloat(e.target.value)))}
+              className="flex-1 accent-amber-600"
+            />
+            <button
+              type="button"
+              onClick={zoomIn}
+              disabled={(imageScale || 1) >= MAX_ZOOM - 0.001}
+              className="w-8 h-8 rounded-lg bg-gray-800 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed text-gray-200 flex items-center justify-center transition-colors"
+              title="Zoom in"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            </button>
+            <span className="text-xs text-gray-400 w-12 text-right tabular-nums">{Math.round((imageScale || 1) * 100)}%</span>
+            <button
+              type="button"
+              onClick={zoomReset}
+              disabled={(imageScale || 1) === 1}
+              className="text-xs px-2 py-1 rounded-md bg-gray-800 hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed text-gray-300 transition-colors"
+              title="Reset zoom to 100%"
+            >
+              Reset
+            </button>
+          </div>
+          <p className="text-[10px] text-gray-600 mt-1.5">Tip: hold Ctrl/Cmd and scroll over the image to zoom</p>
+        </div>
+      )}
 
       <div
         ref={wrapperRef}

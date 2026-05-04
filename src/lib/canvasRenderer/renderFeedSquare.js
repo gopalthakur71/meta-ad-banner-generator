@@ -1,19 +1,19 @@
 import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
+export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, imageScale = 1, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
   if (productImg) {
     if (layout === 'overlay' || layout === 'centered') {
-      drawImageCover(ctx, productImg, 0, 0, W, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      drawImageCover(ctx, productImg, 0, 0, W, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       const grad = ctx.createLinearGradient(0, H * 0.45, 0, H)
       grad.addColorStop(0, 'rgba(0,0,0,0)')
       grad.addColorStop(1, hexToRgba(palette.primary, 0.88))
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, W, H)
     } else if (layout === 'left-aligned') {
-      drawImageCover(ctx, productImg, W * 0.45, 0, W * 0.55, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      drawImageCover(ctx, productImg, W * 0.45, 0, W * 0.55, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       const grad = ctx.createLinearGradient(0, 0, W * 0.72, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 1))
       grad.addColorStop(0.6, hexToRgba(palette.primary, 0.9))
@@ -21,7 +21,7 @@ export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, W, H)
     } else if (layout === 'right-aligned') {
-      drawImageCover(ctx, productImg, 0, 0, W * 0.55, H, imageOffset.dx || 0, imageOffset.dy || 0)
+      drawImageCover(ctx, productImg, 0, 0, W * 0.55, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       const grad = ctx.createLinearGradient(W, 0, W * 0.28, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 1))
       grad.addColorStop(0.6, hexToRgba(palette.primary, 0.9))
@@ -29,7 +29,7 @@ export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, W, H)
     } else {
-      drawImageCover(ctx, productImg, 0, H * 0.38, W, H * 0.62, imageOffset.dx || 0, imageOffset.dy || 0)
+      drawImageCover(ctx, productImg, 0, H * 0.38, W, H * 0.62, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       ctx.fillStyle = palette.primary
       ctx.fillRect(0, 0, W, H * 0.4)
     }

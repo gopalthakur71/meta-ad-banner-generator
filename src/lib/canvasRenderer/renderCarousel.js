@@ -1,11 +1,11 @@
 import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
+export function renderCarousel(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, imageScale = 1, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
   const imgH = Math.floor(H * 0.62)
-  if (productImg) drawImageCover(ctx, productImg, 0, 0, W, imgH, imageOffset.dx || 0, imageOffset.dy || 0)
+  if (productImg) drawImageCover(ctx, productImg, 0, 0, W, imgH, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
 
   ctx.fillStyle = palette.primary
   ctx.fillRect(0, imgH - 4, W, H - imgH + 4)
