@@ -73,13 +73,19 @@ export function drawOfferBadge(ctx, text, x, y, accentColor, align = 'center') {
   ctx.font = '600 24px Lato'
   ctx.textAlign = align
   const tw = ctx.measureText(upper).width
-  const pw = tw + 36, ph = 36, pr = 18
+  const padX = 18
+  const pw = tw + padX * 2, ph = 36, pr = 18
   const bx = align === 'center' ? x - pw / 2 : x
   ctx.fillStyle = accentColor
   drawRoundedRect(ctx, bx, y - 26, pw, ph, pr)
   ctx.fill()
   ctx.fillStyle = '#FFFFFF'
-  ctx.fillText(upper, x, y)
+  // Center-aligned text uses textAlign=center, so it's already symmetric
+  // around x. For left-aligned badges the pill starts at x but textAlign=left
+  // would draw the text flush against the left edge — shift it inward by
+  // padX so left and right padding match.
+  const tx = align === 'center' ? x : x + padX
+  ctx.fillText(upper, tx, y)
   ctx.restore()
 }
 
