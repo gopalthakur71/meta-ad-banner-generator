@@ -1,6 +1,6 @@
 import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, imageScale = 1, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
+export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, logoDensity, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, imageScale = 1, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
@@ -132,7 +132,7 @@ export function renderFeedSquare(ctx, { W, H, productImg, logoImg, copy, palette
   }
 
   if (logoImg && logoVisible) {
-    const logoBbox = drawLogo(ctx, logoImg, { W, H, logoOffset, scale: logoScale, opacity: logoOpacity })
+    const logoBbox = drawLogo(ctx, logoImg, { W, H, logoOffset, scale: logoScale, opacity: logoOpacity, density: logoDensity })
     onElement?.('logo', logoBbox)
   }
 }

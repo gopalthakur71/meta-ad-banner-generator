@@ -89,7 +89,7 @@ export function drawOfferBadge(ctx, text, x, y, accentColor, align = 'center') {
   ctx.restore()
 }
 
-export function drawLogo(ctx, logoImg, { W, H, logoOffset = {}, scale = 1, opacity = 1 }) {
+export function drawLogo(ctx, logoImg, { W, H, logoOffset = {}, scale = 1, opacity = 1, density = 1 }) {
   const baseH = Math.min(Math.max(H * 0.055, 48), 100)
   const lh = baseH * scale
   const lw = (logoImg.width / logoImg.height) * lh
@@ -102,6 +102,9 @@ export function drawLogo(ctx, logoImg, { W, H, logoOffset = {}, scale = 1, opaci
   const r = (Math.max(lw, lh) / 2) * 1.05
   const cx = x + lw / 2
   const cy = y + lh / 2
+  // Multi-pass overprint: each pass stacks the alpha of semi-transparent
+  // pixels toward solid without changing colors. density=1 is a single draw.
+  const passes = Math.max(1, Math.round(density))
   ctx.save()
   ctx.globalAlpha = opacity
   ctx.beginPath()
@@ -110,7 +113,9 @@ export function drawLogo(ctx, logoImg, { W, H, logoOffset = {}, scale = 1, opaci
   ctx.fillStyle = '#FFFFFF'
   ctx.fill()
   ctx.clip()
-  ctx.drawImage(logoImg, x, y, lw, lh)
+  for (let i = 0; i < passes; i++) {
+    ctx.drawImage(logoImg, x, y, lw, lh)
+  }
   ctx.restore()
   return { x, y, w: lw, h: lh }
 }

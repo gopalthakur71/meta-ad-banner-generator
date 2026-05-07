@@ -29,6 +29,7 @@ export function useBannerState() {
   const [logoVisible, setLogoVisible] = useState(true)
   const [logoOpacity, setLogoOpacity] = useState(1)
   const [logoScale, setLogoScale] = useState(1)
+  const [logoDensity, setLogoDensity] = useState(1)
   const [logoOffset, setLogoOffset] = useState({ dx: 0, dy: 0 })
   const [imageOffset, setImageOffset] = useState({ dx: 0, dy: 0 })
   const [imageScale, setImageScale] = useState(1)
@@ -139,6 +140,7 @@ export function useBannerState() {
     logoVisible, setLogoVisible,
     logoOpacity, setLogoOpacity,
     logoScale, setLogoScale,
+    logoDensity, setLogoDensity,
     layout, setLayout,
     copy, setCopy,
     activePalette,

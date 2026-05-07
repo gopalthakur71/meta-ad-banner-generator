@@ -14,7 +14,7 @@ const renderers = {
   'hero-mobile': renderHeroMobile,
 }
 
-export function renderBanner(canvas, { format, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor, textOffsets, onElementDrawn, logoOffset, imageOffset, imageScale, headlineFontSize, subFontSize, ctaColor, badgeColor }) {
+export function renderBanner(canvas, { format, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, logoDensity, headlineFont, customTextColor, textOffsets, onElementDrawn, logoOffset, imageOffset, imageScale, headlineFontSize, subFontSize, ctaColor, badgeColor }) {
   const ctx = canvas.getContext('2d')
   canvas.width = format.width
   canvas.height = format.height
@@ -40,6 +40,7 @@ export function renderBanner(canvas, { format, productImg, logoImg, copy, palett
     logoVisible,
     logoOpacity,
     logoScale,
+    logoDensity,
     headlineFont: headlineFont || 'Playfair Display',
     customTextColor: customTextColor || '#FFFFFF',
     textOffsets: textOffsets || {},

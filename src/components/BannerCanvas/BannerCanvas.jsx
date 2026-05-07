@@ -13,7 +13,7 @@ export default function BannerCanvas({ state }) {
 
   const {
     selectedFormat, productImg, logoImg, copy, activePalette, layout, setLayout, productName,
-    logoVisible, logoOpacity, logoScale, headlineFont, customTextColor,
+    logoVisible, logoOpacity, logoScale, logoDensity, headlineFont, customTextColor,
     textOffsets, updateTextOffset, resetTextOffsets,
     logoOffset, setLogoOffset,
     imageOffset, setImageOffset,
@@ -46,6 +46,7 @@ export default function BannerCanvas({ state }) {
         logoVisible,
         logoOpacity,
         logoScale,
+        logoDensity,
         headlineFont,
         customTextColor,
         textOffsets,
@@ -61,7 +62,7 @@ export default function BannerCanvas({ state }) {
         },
       })
     })
-  }, [copy, selectedFormat, productImg, logoImg, activePalette, layout, logoVisible, logoOpacity, logoScale, headlineFont, customTextColor, textOffsets, logoOffset, imageOffset, imageScale, headlineFontSize, subFontSize, ctaColor, badgeColor])
+  }, [copy, selectedFormat, productImg, logoImg, activePalette, layout, logoVisible, logoOpacity, logoScale, logoDensity, headlineFont, customTextColor, textOffsets, logoOffset, imageOffset, imageScale, headlineFontSize, subFontSize, ctaColor, badgeColor])
 
   const maxDisplayW = 560
   const scale = Math.min(1, maxDisplayW / selectedFormat.width)

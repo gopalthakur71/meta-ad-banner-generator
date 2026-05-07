@@ -7,6 +7,7 @@ export default function AssetUploader({ state }) {
     logoVisible, setLogoVisible,
     logoOpacity, setLogoOpacity,
     logoScale, setLogoScale,
+    logoDensity, setLogoDensity,
   } = state
 
   return (
@@ -61,9 +62,22 @@ export default function AssetUploader({ state }) {
                 <p className="text-xs text-gray-400">{Math.round(logoScale * 100)}%</p>
               </div>
               <input
-                type="range" min={0.4} max={2.5} step={0.05}
+                type="range" min={0.4} max={5} step={0.05}
                 value={logoScale}
                 onChange={e => setLogoScale(parseFloat(e.target.value))}
+                className="w-full accent-amber-600"
+              />
+            </div>
+
+            <div>
+              <div className="flex justify-between mb-1">
+                <p className="text-xs text-gray-500">Density</p>
+                <p className="text-xs text-gray-400">{logoDensity}x</p>
+              </div>
+              <input
+                type="range" min={1} max={5} step={1}
+                value={logoDensity}
+                onChange={e => setLogoDensity(parseInt(e.target.value, 10))}
                 className="w-full accent-amber-600"
               />
             </div>
