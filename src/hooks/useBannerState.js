@@ -31,8 +31,10 @@ export function useBannerState() {
   const [logoScale, setLogoScale] = useState(1)
   const [logoDensity, setLogoDensity] = useState(1)
   const [logoOffset, setLogoOffset] = useState({ dx: 0, dy: 0 })
-  const [imageOffset, setImageOffset] = useState({ dx: 0, dy: 0 })
-  const [imageScale, setImageScale] = useState(1)
+  // imageRect is the destination rectangle for the product image in canvas
+  // coordinates. null = use the layout's default frame. The move-tool handles
+  // and body-drag write into this; resetting it to null restores the default.
+  const [imageRect, setImageRect] = useState(null)
   const [textOffsets, setTextOffsets] = useState({})
   // bannerId scopes API cost tracking. It regenerates on "New Product"
   // (a fresh banner session). "Change Photo" keeps the same id since the
@@ -57,19 +59,21 @@ export function useBannerState() {
     if (src) srcToImg(src, setLogoImg)
   }, [])
 
+  // Layout and format both change the image's default frame, so any
+  // user-set imageRect is meaningless for the new frame. Drop it.
+  useEffect(() => { setImageRect(null) }, [selectedFormat, layout])
+
   function setProductAsset(img, src) {
     setProductImg(img)
     setProductSrc(src)
-    setImageOffset({ dx: 0, dy: 0 })
-    setImageScale(1)
+    setImageRect(null)
     localStorage.setItem('banner_productSrc', src)
   }
 
   function clearProductAsset() {
     setProductImg(null)
     setProductSrc(null)
-    setImageOffset({ dx: 0, dy: 0 })
-    setImageScale(1)
+    setImageRect(null)
     localStorage.removeItem('banner_productSrc')
   }
 
@@ -106,7 +110,7 @@ export function useBannerState() {
     setProductDescription('')
     setTextOffsets({})
     setLogoOffset({ dx: 0, dy: 0 })
-    setImageScale(1)
+    setImageRect(null)
     setBannerId(makeBannerId())
   }
 
@@ -122,8 +126,7 @@ export function useBannerState() {
     tone, setTone,
     headlineFont, setHeadlineFont,
     textOffsets, updateTextOffset, resetTextOffsets,
-    imageOffset, setImageOffset,
-    imageScale, setImageScale,
+    imageRect, setImageRect,
     logoOffset, setLogoOffset,
     selectedFormat, setSelectedFormat,
     palette, setPalette,

@@ -1,12 +1,24 @@
-import { drawImageCover, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
+import { drawImageInRect, drawWrappedText, hexToRgba, drawRoundedRect, drawLogo, drawOfferBadge } from './utils'
 
-export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, logoDensity, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageOffset = {}, imageScale = 1, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
+export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette, layout, logoVisible, logoOpacity, logoScale, logoDensity, headlineFont, customTextColor = '#FFFFFF', textOffsets = {}, onElement, logoOffset = {}, imageRect = null, headlineFontSize = 1, subFontSize = 1, ctaColor, badgeColor }) {
   ctx.fillStyle = palette.background
   ctx.fillRect(0, 0, W, H)
 
   if (productImg) {
+    let frame
     if (layout === 'left-aligned' || layout === 'minimal') {
-      drawImageCover(ctx, productImg, W * 0.5, 0, W * 0.5, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
+      frame = { x: W * 0.5, y: 0, w: W * 0.5, h: H }
+    } else if (layout === 'right-aligned') {
+      frame = { x: 0, y: 0, w: W * 0.5, h: H }
+    } else {
+      frame = { x: 0, y: 0, w: W, h: H }
+    }
+    const rect = imageRect ?? frame
+    drawImageInRect(ctx, productImg, rect.x, rect.y, rect.w, rect.h)
+    onElement?.('image', rect)
+    onElement?.('image_default', frame)
+
+    if (layout === 'left-aligned' || layout === 'minimal') {
       const grad = ctx.createLinearGradient(0, 0, W * 0.72, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 1))
       grad.addColorStop(0.62, hexToRgba(palette.primary, 0.88))
@@ -14,7 +26,6 @@ export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette,
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, W, H)
     } else if (layout === 'right-aligned') {
-      drawImageCover(ctx, productImg, 0, 0, W * 0.5, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       const grad = ctx.createLinearGradient(W, 0, W * 0.28, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 1))
       grad.addColorStop(0.62, hexToRgba(palette.primary, 0.88))
@@ -22,7 +33,6 @@ export function renderLandscape(ctx, { W, H, productImg, logoImg, copy, palette,
       ctx.fillStyle = grad
       ctx.fillRect(0, 0, W, H)
     } else {
-      drawImageCover(ctx, productImg, 0, 0, W, H, imageOffset.dx || 0, imageOffset.dy || 0, imageScale)
       const grad = ctx.createLinearGradient(0, 0, W * 0.65, 0)
       grad.addColorStop(0, hexToRgba(palette.primary, 0.92))
       grad.addColorStop(1, 'rgba(0,0,0,0)')
