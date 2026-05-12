@@ -1,0 +1,19 @@
+# Terraform working directory (providers, modules, lambda zip)
+.terraform/
+
+# State files — local backend for now. Switching to S3+DynamoDB remote backend
+# is a deferred follow-up if a teammate joins.
+terraform.tfstate
+terraform.tfstate.backup
+crash.log
+crash.*.log
+
+# Saved plan binaries — ephemeral, may contain sensitive resource IDs
+tfplan.binary
+*.tfplan
+
+# Variable files may contain account-specific values
+*.tfvars
+*.tfvars.json
+
+# Keep .terraform.lock.hcl committed — it pins provider versions for reproducibility.
