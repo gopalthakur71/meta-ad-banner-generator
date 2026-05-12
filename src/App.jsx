@@ -1,5 +1,6 @@
 import { useBannerState } from './hooks/useBannerState'
 import { useClaudeGenerate } from './hooks/useClaudeGenerate'
+import { useAuth } from './contexts/AuthContext'
 import BrandForm from './components/BrandForm/BrandForm'
 import AssetUploader from './components/AssetUploader/AssetUploader'
 import ColorPicker from './components/ColorPicker/ColorPicker'
@@ -9,6 +10,7 @@ import CopyEditor from './components/CopyEditor/CopyEditor'
 import FontPicker from './components/FontPicker/FontPicker'
 import CostChip from './components/CostTracker/CostChip'
 import CostHistoryPage from './components/CostTracker/CostHistoryPage'
+import LoginScreen from './components/Login/LoginScreen'
 
 function SectionTitle({ children }) {
   return (
@@ -21,10 +23,20 @@ function SectionTitle({ children }) {
 }
 
 export default function App() {
+  const { auth, bootstrapping, signOut } = useAuth()
   const state = useBannerState()
   const { generate, loading, error, recordVersion } = useClaudeGenerate()
 
   const canGenerate = !!(state.productName && state.productDescription)
+
+  // Avoid flashing the login screen while we check for a cached session.
+  if (bootstrapping) {
+    return <div className="min-h-screen bg-gray-950" />
+  }
+
+  if (!auth) {
+    return <LoginScreen />
+  }
 
   function handleGenerate() {
     generate({
@@ -76,6 +88,13 @@ export default function App() {
               className="text-xs px-3 py-1.5 rounded-lg bg-rose-900/50 border border-rose-800 text-rose-300 hover:bg-rose-800 hover:text-white transition-colors"
             >
               New Product
+            </button>
+            <button
+              onClick={signOut}
+              title={auth.email}
+              className="text-xs px-3 py-1.5 rounded-lg bg-gray-800 border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white transition-colors"
+            >
+              Sign Out
             </button>
             <span className="text-xs px-3 py-1 rounded-full bg-rose-900/40 border border-rose-800 text-rose-400">
               Powered by Claude
